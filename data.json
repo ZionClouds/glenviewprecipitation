@@ -1,0 +1,100 @@
+{
+    "data": [
+        {
+            "city": "Service Center Rainfall",
+            "lat": 42.07907923834326,
+            "lng": -87.8214062215235,
+            "currentLevels": 6.7,
+            "previousData": [
+                {
+                    "timestamp": "2024-09-06 20:30:08.000",
+                    "riseLevel": 617.81
+                },
+                {
+                    "timestamp": "2024-09-06 20:40:08.000",
+                    "riseLevel": 617.79
+                },
+                {
+                    "timestamp": "2024-09-06 20:50:08.000",
+                    "riseLevel": 617.81
+                },
+                {
+                    "timestamp": "2024-09-06 21:00:08.000",
+                    "riseLevel": 617.82
+                }
+            ]
+        },
+        {
+            "city": "East Side Rainfall",
+            "lat": 42.06949932995881,
+            "lng": -87.77125931992899,
+            "currentLevels": 7.1,
+            "previousData": [
+                {
+                    "timestamp": "2024-09-06 20:30:08.000",
+                    "riseLevel": 617.81
+                },
+                {
+                    "timestamp": "2024-09-06 20:40:08.000",
+                    "riseLevel": 617.79
+                },
+                {
+                    "timestamp": "2024-09-06 20:50:08.000",
+                    "riseLevel": 617.81
+                },
+                {
+                    "timestamp": "2024-09-06 21:00:08.000",
+                    "riseLevel": 617.82
+                }
+            ]
+        },
+        {
+            "city": "Techny Basin Reservoir Level",
+            "lat": 42.097692466267624,
+            "lng": -87.80849209109142,
+            "currentLevels": 6.1,
+            "previousData": [
+                {
+                    "timestamp": "2024-09-06 20:30:08.000",
+                    "riseLevel": 617.81
+                },
+                {
+                    "timestamp": "2024-09-06 20:40:08.000",
+                    "riseLevel": 617.79
+                },
+                {
+                    "timestamp": "2024-09-06 20:50:08.000",
+                    "riseLevel": 617.81
+                },
+                {
+                    "timestamp": "2024-09-06 21:00:08.000",
+                    "riseLevel": 617.82
+                }
+            ]
+        },
+        {
+            "city": "West Fork of the chicago River's North Branch",
+            "lat": 42.1708866058241,
+            "lng": -87.84745483998773,
+            "currentLevels": 6.5,
+            "previousData": [
+                {
+                    "timestamp": "2024-09-06 20:30:08.000",
+                    "riseLevel": 617.81
+                },
+                {
+                    "timestamp": "2024-09-06 20:40:08.000",
+                    "riseLevel": 617.79
+                },
+                {
+                    "timestamp": "2024-09-06 20:50:08.000",
+                    "riseLevel": 617.81
+                },
+                {
+                    "timestamp": "2024-09-06 21:00:08.000",
+                    "riseLevel": 617.82
+                }
+            ]
+        }
+    ]
+}
