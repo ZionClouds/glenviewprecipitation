@@ -1,0 +1,232 @@
+.bg-body-tertiary {
+  background-color: #1a6183 !important;
+}
+.navbar-nav .nav-link,
+.navbar-nav .nav-link.active {
+  color: #fff;
+}
+
+.weather-filters .list-group-horizontal>.list-group-item+.list-group-item,
+.weather-filters .list-group-horizontal>.list-group-item:first-child:not(:last-child) {
+  border: none;
+}
+.weather-filters .list-group-horizontal {
+  align-items: center;
+}
+.map-container {
+  width: 100%;
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+}
+.flood-info-data {
+  text-align: left;
+  text-transform: uppercase;
+}
+.flood-info-data > .flooding-item {
+  margin-bottom: 5px;
+  border-bottom: 1px solid;
+  position: relative;
+  padding-left: 30px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.flood-info-data > .flooding-item:nth-child(1) {
+  border-color: #ca0c00;
+}
+.flood-info-data > .flooding-item:nth-child(2) {
+  border-color: #ffbe0a;
+}
+.flood-info-data > .flooding-item:nth-child(3) {
+  border-color: #008c0f;
+}
+.flood-info-data > .flooding-item:nth-child(4) {
+  border-color: #00fe00;
+}
+.flood-info-data > .flooding-item::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  background-color: #000;
+  display: inline-block;
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+}
+.flood-info-data > .flooding-item:nth-child(1):before {
+  background-color: #ca0c00;
+}
+.flood-info-data > .flooding-item:nth-child(2):before {
+  background-color: #ffbe0a;
+}
+.flood-info-data > .flooding-item:nth-child(3):before {
+  background-color: #008c0f;
+}
+.flood-info-data > .flooding-item:nth-child(4):before {
+  background-color: #00fe00;
+}
+  /* The popup bubble styling. */
+.popup-bubble {
+  /* Position the bubble centred-above its parent. */
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -100%);
+  /* Style the bubble. */
+  background-color: white;
+  padding: 5px;
+  border-radius: 5px;
+  font-family: sans-serif;
+  overflow-y: auto;
+  max-height: 60px;
+  box-shadow: 0px 2px 10px 1px rgba(0, 0, 0, 0.5);
+}
+
+/* The parent of the bubble. A zero-height div at the top of the tip. */
+.popup-bubble-anchor {
+  /* Position the div a fixed distance above the tip. */
+  position: absolute;
+  width: 100%;
+  bottom: 8px;
+  left: 0;
+}
+
+/* This element draws the tip. */
+.popup-bubble-anchor::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Center the tip horizontally. */
+  transform: translate(-50%, 0);
+  /* The tip is a https://css-tricks.com/snippets/css/css-triangle/ */
+  width: 0;
+  height: 0;
+  /* The tip is 8px high, and 12px wide. */
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid white;
+}
+
+/* JavaScript will position this div at the bottom of the popup tip. */
+.popup-container {
+  cursor: auto;
+  height: 0;
+  position: absolute;
+  /* The max width of the info window. */
+  width: 200px;
+}
+
+
+
+.custom-popup {
+  font-family: "Poppins", serif;
+  position: absolute;
+  /* padding: 8px 15px; */
+  border-radius: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  transform: translate(-50%, -100%);
+  width: 340px;
+  z-index: 100; /* Ensure popup appears above other elements */
+  background: rgb(8, 69, 148);
+  background: linear-gradient(180deg, rgba(8, 69, 148, 1) 35%, rgba(1, 235, 228, 1) 100%);
+  height: auto;
+  color: #fff;
+}
+.custom-popup h3 {
+  margin-top: 0;
+  font-size: 18px;
+}
+.custom-popup .city-name {
+  font-weight: 500;
+  font-size: 16px; 
+  padding: 0 16px;
+}
+.custom-popup .break-line {
+   background-color: #fff;
+   height: 1px;
+}
+.custom-popup .rise-level {
+  background-color: rgba(255, 255, 255, 0.3);
+  width: 72%;
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+  height: 56px;
+  justify-content: space-between;
+}
+.custom-popup .rise-level img {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  right: 28px;
+}
+.custom-popup .rise-level .rise {
+  display: flex;
+  flex-direction: column;
+  margin-right: 16px;
+  margin-top: 12px;
+}
+
+.custom-popup .rise-level .rise .levels {
+  font-size: 23px;
+  font-weight: 500;
+  text-align: end;
+  position: relative;
+  bottom: 6px;
+} 
+.custom-popup .last-update {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.custom-popup ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.custom-popup ul li {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+.custom-popup .close-icon {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 16px;
+  position: relative;
+  right: 16px;
+  top: 6px;
+  cursor: pointer;
+}
+.custom-popup .previous-data {
+  width: 80%;
+  margin: 0 auto;
+  margin-bottom: 36px;
+}
+.custom-popup .previous-data .break-line {
+  margin: 8px 0;
+}
+.custom-popup .previous-data .previous-heading {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.custom-popup .previous-data .previous-values {
+  display: flex;
+  justify-content: space-between;
+  color: #02125f;
+  font-weight: 600;
+}
+/* .custom-popup::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  margin-left: -10px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: white transparent transparent transparent;
+} */
