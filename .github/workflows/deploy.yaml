@@ -69,8 +69,8 @@ jobs:
             --region ${{ env.REGION }} \
             --allow-unauthenticated \
             --service-account ${{ env.SERVICE_ACCOUNT }} \
-            --memory 8Gi                  # Increase memory (example: 4 GB)
-
+            --memory 8Gi    \
+            --cpu 4  # Set CPU to 4 vCPUs (adjust as needed)
 
       # Verify Deployment
       - name: Get Cloud Run URLs
