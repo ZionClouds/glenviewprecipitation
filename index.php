@@ -59,10 +59,9 @@
                 <div class="weather-filters">
                     <ul class="list-group list-group-horizontal">
                         <li class="list-group-item">
-                            <button type="button" class="btn btn-primary">Houly</button>
+                            <button type="button" class="btn btn-primary">Hourly</button>
                         </li>
                         <li class="list-group-item">Today</li>
-                        <li class="list-group-item">Tomorrow</li>
                         <li class="list-group-item">Weekly</li>
                         <li class="list-group-item">Monthly</li>
                     </ul>
