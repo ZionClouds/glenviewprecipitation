@@ -45,6 +45,30 @@ def retrieve_data():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/retrieve_city_data', methods=['GET'])
+def retrieve_city_data():
+    try:
+        city_name = request.args.get('city')  # Get city name from query parameter
+
+        if city_name:
+            # Retrieve data for a specific city
+            doc_ref = db.collection(COLLECTION_NAME).document(city_name)
+            doc = doc_ref.get()
+
+            if doc.exists:
+                return jsonify({city_name: doc.to_dict()}), 200
+            else:
+                return jsonify({"error": "City not found"}), 404
+        else:
+            # Retrieve all data
+            docs = db.collection(COLLECTION_NAME).stream()
+            data = [{doc.id: doc.to_dict()} for doc in docs]
+            return jsonify({"data": data}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 
 if __name__ == '__main__':
