@@ -12,7 +12,6 @@ $(document).ready(function() {
             if(data) {
                 initMap();
             }
-            console.log(response);
         },
         error: function(xhr, status, error) {
             console.log(error);
@@ -131,12 +130,20 @@ class CustomPopup extends window.google.maps.OverlayView {
 }
 
 function initMap() {
+    // Transform the data structure to a flat array
+    const transformedData = data.map(location => {
+        // Get the city key and its data
+        const cityKey = Object.keys(location)[0];
+        const cityData = location[cityKey];
+        return cityData; // This will give us the flat structure we need
+    });
+
     map = new window.google.maps.Map(document.getElementById("map"), {
-        center: { lat: data[0].lat, lng: data[0].lng },
+        center: { lat: transformedData[0].lat, lng: transformedData[0].lng },
         zoom: 12
     });
 
-    data.forEach(location => {
+    transformedData.forEach(location => {
         const marker = new window.google.maps.Marker({
             position: { lat: location.lat, lng: location.lng },
             map: map,

@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" href="assets/css/style.css" />
 
-        <script src="https://maps.googleapis.com/maps/api/js?key=<?php echo $_ENV['GOOGLE_MAP_API_KEY']; ?>"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCLYuOmekHy21jqe40OUxSRDo-R505fVig"></script>
 
     </head>
     <!-- onload="initMap()" -->
