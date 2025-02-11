@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" href="assets/css/style.css" />
 
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCE0x6NHiyQ1AgBnshUzgnI285P1AkHAQ8"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCLYuOmekHy21jqe40OUxSRDo-R505fVig"></script>
 
     </head>
     <!-- onload="initMap()" -->
