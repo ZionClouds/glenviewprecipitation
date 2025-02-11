@@ -10,7 +10,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Initialize Firestore Client
-db = firestore.Client()
+db = firestore.Client(database="glenview-data")
 
 # Firestore Collection Name
 COLLECTION_NAME = "glenview-data"
