@@ -1,0 +1,4 @@
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=securepassword
+GOOGLE_MAP_API_KEY=AIzaSyCE0x6NHiyQ1AgBnshUzgnI285P1AkHAQ8

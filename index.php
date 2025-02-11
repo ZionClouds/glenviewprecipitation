@@ -1,6 +1,6 @@
 <?php
-    require_once 'load_env.php';
-    loadEnv(__DIR__ . '/.env');    
+    // require_once 'load_env.php';
+    // loadEnv(__DIR__ . '/.env');    
 ?>
 <!DOCTYPE html>
 <html>
@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" href="assets/css/style.css" />
 
-        <script src="https://maps.googleapis.com/maps/api/js?key=<?php echo $_ENV['GOOGLE_MAP_API_KEY']; ?>"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCE0x6NHiyQ1AgBnshUzgnI285P1AkHAQ8"></script>
 
     </head>
     <!-- onload="initMap()" -->
