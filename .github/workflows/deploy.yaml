@@ -23,6 +23,8 @@ jobs:
       REGION: "us-central1"    # Deployment region
       FRONTEND_CONTAINER_IMAGE: "us-central1-docker.pkg.dev/zbala-1/php-repo/glenview-precipitation:latest"
       FRONTEND_SERVICE_NAME: "glenview-precipitation"
+      BACKEND_CONTAINER_IMAGE: "us-central1-docker.pkg.dev/zbala-1/php-repo/glenview-precipitation-backend:latest"
+      BACKEND_SERVICE_NAME: "glenview-precipitation-backend"
       SERVICE_ACCOUNT: "github-actions-sa@zbala-1.iam.gserviceaccount.com"
 
     steps:
@@ -72,8 +74,26 @@ jobs:
             --memory 8Gi    \
             --cpu 4  # Set CPU to 4 vCPUs (adjust as needed)
 
+      # Step 5: Build and push Docker image
+      - name: Build and Push Backend Docker Image
+        run: |
+          docker build --no-cache -t ${{ env.BACKEND_CONTAINER_IMAGE }} .
+          docker push ${{ env.BACKEND_CONTAINER_IMAGE }}
+
+      # Step 6: Deploy to Cloud Run
+      - name: Deploy Frontend to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.BACKEND_SERVICE_NAME }} \
+            --image ${{ env.BACKEND_CONTAINER_IMAGE }} \
+            --platform managed \
+            --region ${{ env.REGION }} \
+            --allow-unauthenticated \
+            --service-account ${{ env.SERVICE_ACCOUNT }} \
+            --memory 8Gi    \
+            --cpu 4  # Set CPU to 4 vCPUs (adjust as needed)
+
       # Verify Deployment
       - name: Get Cloud Run URLs
         run: |
-          echo "Backend URL:"
-          gcloud run services describe devops-backend --platform managed --region ${{ env.REGION }} --format="value(status.url)"
+          echo "Frontend URL:"
+          gcloud run services describe ${{ env.FRONTEND_SERVICE_NAME }} --platform managed --region ${{ env.REGION }} --format="value(status.url)"

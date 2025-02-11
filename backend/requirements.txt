@@ -1,0 +1,6 @@
+Flask==3.1.0
+Flask-Cors==5.0.0
+gcloud==0.18.3
+google-cloud-firestore
+google-cloud-secret-manager
+requests
