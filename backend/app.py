@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from google.cloud import firestore
 from flask_cors import CORS
+import os
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -12,7 +13,7 @@ CORS(app)
 db = firestore.Client()
 
 # Firestore Collection Name
-COLLECTION_NAME = "rainfall_data"
+COLLECTION_NAME = "glenview-data"
 
 @app.route('/store_data', methods=['POST'])
 def store_data():
@@ -47,4 +48,5 @@ def retrieve_data():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 8080))  # Get PORT from environment variables
+    app.run(host='0.0.0.0', port=port)  # Ensure Flask listens on all interfaces (Cloud Run requirement)
