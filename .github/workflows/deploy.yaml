@@ -57,7 +57,7 @@ jobs:
       # Step 5: Build and push Docker image
       - name: Build and Push Frontend Docker Image
         run: |
-          docker build --no-cache -t ${{ env.FRONTEND_CONTAINER_IMAGE }} ./frontend
+          docker build --no-cache -t ${{ env.FRONTEND_CONTAINER_IMAGE }} .
           docker push ${{ env.FRONTEND_CONTAINER_IMAGE }}
 
       # Step 6: Deploy to Cloud Run
