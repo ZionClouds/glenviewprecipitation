@@ -1,0 +1,79 @@
+name: Deploy Redactor Backend to GCP Cloud Run
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write  # Required for OIDC authentication
+      contents: read
+
+    env:
+      PROJECT_ID: "zbala-1"  # Replace with your GCP project ID
+      REGION: "us-central1"    # Deployment region
+      FRONTEND_CONTAINER_IMAGE: "us-central1-docker.pkg.dev/zbala-1/php-repo/glenview-precipitation:latest"
+      FRONTEND_SERVICE_NAME: "glenview-precipitation"
+      SERVICE_ACCOUNT: "github-actions-sa@zbala-1.iam.gserviceaccount.com"
+
+    steps:
+      # Step 1: Checkout the code
+      - uses: 'actions/checkout@v4'
+
+      - name: Debug OIDC Claims
+        run: |
+            echo "Repository: ${{ github.repository }}"
+            echo "Repository Owner: ${{ github.repository_owner }}"
+
+
+      # Step 2: Authenticate with GCP using OIDC Service Account
+      - uses: 'google-github-actions/auth@v2'
+        with:
+            workload_identity_provider: "projects/187517077947/locations/global/workloadIdentityPools/github-pool/providers/github-provider-gv"
+            service_account: "github-actions-sa@zbala-1.iam.gserviceaccount.com"
+
+
+      # Step 3: Set up gcloud CLI
+      - name: Install gcloud CLI
+        uses: 'google-github-actions/setup-gcloud@v1'
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      # Step 4: Configure Docker authentication for GCP
+      - name: Configure Docker for GCP
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev
+
+
+      # Step 5: Build and push Docker image
+      - name: Build and Push Frontend Docker Image
+        run: |
+          docker build --no-cache -t ${{ env.FRONTEND_CONTAINER_IMAGE }} ./frontend
+          docker push ${{ env.FRONTEND_CONTAINER_IMAGE }}
+
+      # Step 6: Deploy to Cloud Run
+      - name: Deploy Frontend to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.FRONTEND_SERVICE_NAME }} \
+            --image ${{ env.FRONTEND_CONTAINER_IMAGE }} \
+            --platform managed \
+            --region ${{ env.REGION }} \
+            --allow-unauthenticated \
+            --service-account ${{ env.SERVICE_ACCOUNT }} \
+            --memory 4Gi                  # Increase memory (example: 4 GB)
+
+
+      # Verify Deployment
+      - name: Get Cloud Run URLs
+        run: |
+          echo "Backend URL:"
+          gcloud run services describe devops-backend --platform managed --region ${{ env.REGION }} --format="value(status.url)"
