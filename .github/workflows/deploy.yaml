@@ -69,7 +69,8 @@ jobs:
             --region ${{ env.REGION }} \
             --allow-unauthenticated \
             --service-account ${{ env.SERVICE_ACCOUNT }} \
-            --memory 4Gi                  # Increase memory (example: 4 GB)
+            --cpu 4 \                  # Increase CPU (example: 1 vCPU)
+            --memory 8Gi                  # Increase memory (example: 4 GB)
 
 
       # Verify Deployment
