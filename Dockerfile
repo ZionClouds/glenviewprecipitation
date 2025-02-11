@@ -1,26 +1,22 @@
 # Use official PHP Apache image
-FROM php:8.2-apache
+FROM php:8.1-apache
 
-# Allow Apache to listen on any PORT provided by Cloud Run
-ENV PORT=8080
-RUN sed -i "s/Listen 80/Listen ${PORT}/" /etc/apache2/ports.conf
-RUN sed -i "s/:80/:${PORT}/g" /etc/apache2/sites-available/000-default.conf
+# Set Apache to listen on port 8080
+RUN sed -i 's/Listen 80/Listen 8080/' /etc/apache2/ports.conf
+RUN sed -i 's/:80/:8080/g' /etc/apache2/sites-available/000-default.conf
 
-# Set Apache VirtualHost dynamically
-RUN echo '<VirtualHost *:${PORT}>\n\
-    DocumentRoot "/var/www/html"\n\
-    <Directory "/var/www/html">\n\
-        AllowOverride All\n\
-        Require all granted\n\
-    </Directory>\n\
-    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
-    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
-</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+# Verify Apache is listening on port 8080
+RUN cat /etc/apache2/ports.conf && cat /etc/apache2/sites-available/000-default.conf
 
-RUN a2enmod rewrite headers
+# Copy project files to Apache root directory
+COPY . /var/www/html/
 
-# Expose the Cloud Run port
-EXPOSE ${PORT}
+# Set correct permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
 
-# Start Apache server
-CMD ["apache2-foreground"]
+# Expose port 8080 for Cloud Run
+EXPOSE 8080
+
+# Start Apache server with debugging
+CMD apachectl -D FOREGROUND
