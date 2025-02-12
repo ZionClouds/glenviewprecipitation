@@ -36,10 +36,14 @@ def store_data():
             if doc.exists:
                 # If document exists, only update previousData and currentLevels
                 existing_data = doc.to_dict()
+                existing_previous_data = existing_data.get('previousData', [])
                 
-                # Update only specific fields
+                # Add new previous data to existing data
+                new_previous_data = existing_previous_data + entry.get('previousData', [])
+                
+                # Update document with combined data
                 update_data = {
-                    'previousData': entry.get('previousData', []),
+                    'previousData': new_previous_data,
                     'currentLevels': entry.get('currentLevels')
                 }
                 
