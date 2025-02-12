@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from flask import Flask, request, jsonify
 from google.cloud import firestore
 from flask_cors import CORS

@@ -80,3 +80,4 @@ async function makeApiCall() {
 // Start making API calls every 10 minutes
 makeApiCall(); // Initial call
 setInterval(makeApiCall, 6 * 60 * 60 * 1000); // Call every 6 hours
+// 6 * 60 * 60 * 1000
