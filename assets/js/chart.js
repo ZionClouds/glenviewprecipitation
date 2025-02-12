@@ -56,6 +56,7 @@ $(document).ready(function() {
                 // Usage:
                 // Assuming your data is in a variable called 'jsonData'
                 processedData = processChartData(data);
+                console.log(processedData);
                 if(processedData) {
                     initChart();
                 }

@@ -59,11 +59,17 @@
                 <div class="weather-filters">
                     <ul class="list-group list-group-horizontal">
                         <li class="list-group-item">
-                            <button type="button" class="btn btn-primary">Hourly</button>
+                            <button type="button" class="btn btn-primary" data-filter="hourly">Hourly</button>
                         </li>
-                        <li class="list-group-item">Today</li>
-                        <li class="list-group-item">Weekly</li>
-                        <li class="list-group-item">Monthly</li>
+                        <li class="list-group-item">
+                            <button type="button" class="btn btn-link" data-filter="today">Today</button>
+                        </li>
+                        <li class="list-group-item">
+                            <button type="button" class="btn btn-link" data-filter="weekly">Weekly</button>
+                        </li>
+                        <li class="list-group-item">
+                            <button type="button" class="btn btn-link" data-filter="monthly">Monthly</button>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -122,8 +128,9 @@
         <script src="assets/js/jquery.min.js"></script>
         <script src="assets/bootstrap/js/bootstrap.min.js"></script>
         <script src="assets/js/echarts.min.js"></script>
-        <script src="assets/js/mapData.js"></script>
-        <script src="assets/js/chart.js"></script>
+        <!-- <script src="assets/js/mapData.js"></script>
+        <script src="assets/js/chart.js"></script> -->
         <script src="assets/js/generateData.js"></script>
+        <script src="assets/js/app.js"></script>
     </body>
 </html>

@@ -72,12 +72,10 @@ async function makeApiCall() {
             `<p>Data sent successfully at: ${currentTime}</p>`;
     } catch (error) {
         console.error('Error:', error);
-        document.getElementById('status').innerHTML += 
-            `<p style="color: red">Error sending data: ${error.message}</p>`;
     }
 }
 
 // Start making API calls every 10 minutes
-makeApiCall(); // Initial call
+// makeApiCall(); // Initial call
 setInterval(makeApiCall, 6 * 60 * 60 * 1000); // Call every 6 hours
 // 6 * 60 * 60 * 1000
