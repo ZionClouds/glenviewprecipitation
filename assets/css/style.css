@@ -201,9 +201,12 @@
   cursor: pointer;
 }
 .custom-popup .previous-data {
-  width: 80%;
+  width: 85%;
   margin: 0 auto;
   margin-bottom: 36px;
+  max-height: 270px;
+  overflow-y: auto;
+  padding-right: 10px;
 }
 .custom-popup .previous-data .break-line {
   margin: 8px 0;
