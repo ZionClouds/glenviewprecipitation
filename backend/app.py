@@ -27,13 +27,26 @@ def store_data():
             if not city_name:
                 continue
 
-            # Create a new document with timestamp for historical data
-            doc_ref = db.collection(COLLECTION_NAME).document(f"{city_name}_{current_timestamp}")
-            doc_ref.set(entry)
-
-            # Also update the latest data in a separate document
-            latest_doc_ref = db.collection(f"{COLLECTION_NAME}_latest").document(city_name)
-            latest_doc_ref.set(entry)
+            # Get existing document reference
+            doc_ref = db.collection(COLLECTION_NAME).document(city_name)
+            
+            # Get existing data
+            doc = doc_ref.get()
+            
+            if doc.exists:
+                # If document exists, only update previousData and currentLevels
+                existing_data = doc.to_dict()
+                
+                # Update only specific fields
+                update_data = {
+                    'previousData': entry.get('previousData', []),
+                    'currentLevels': entry.get('currentLevels')
+                }
+                
+                doc_ref.update(update_data)
+            else:
+                # If document doesn't exist, create it with all data
+                doc_ref.set(entry)
 
         return jsonify({"message": "Data stored successfully"}), 200
 
