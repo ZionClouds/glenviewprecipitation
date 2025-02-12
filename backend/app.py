@@ -1,3 +1,4 @@
+import datetime
 from flask import Flask, request, jsonify
 from google.cloud import firestore
 from flask_cors import CORS
@@ -19,20 +20,41 @@ COLLECTION_NAME = "glenview-data"
 def store_data():
     try:
         data = request.json.get("data", [])
+        current_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
         for entry in data:
             city_name = entry.get("city")
             if not city_name:
-                continue  # Skip invalid entries
+                continue
 
-            # Store data in Firestore with city name as document ID
-            doc_ref = db.collection(COLLECTION_NAME).document(city_name)
+            # Create a new document with timestamp for historical data
+            doc_ref = db.collection(COLLECTION_NAME).document(f"{city_name}_{current_timestamp}")
             doc_ref.set(entry)
+
+            # Also update the latest data in a separate document
+            latest_doc_ref = db.collection(f"{COLLECTION_NAME}_latest").document(city_name)
+            latest_doc_ref.set(entry)
 
         return jsonify({"message": "Data stored successfully"}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    # try:
+    #     data = request.json.get("data", [])
+
+    #     for entry in data:
+    #         city_name = entry.get("city")
+    #         if not city_name:
+    #             continue  # Skip invalid entries
+
+    #         # Store data in Firestore with city name as document ID
+    #         doc_ref = db.collection(COLLECTION_NAME).document(city_name)
+    #         doc_ref.set(entry)
+
+    #     return jsonify({"message": "Data stored successfully"}), 200
+
+    # except Exception as e:
+    #     return jsonify({"error": str(e)}), 500
 
 
 @app.route('/retrieve_data', methods=['GET'])

@@ -124,5 +124,6 @@
         <script src="assets/js/echarts.min.js"></script>
         <script src="assets/js/mapData.js"></script>
         <script src="assets/js/chart.js"></script>
+        <script src="assets/js/generateData.js"></script>
     </body>
 </html>
