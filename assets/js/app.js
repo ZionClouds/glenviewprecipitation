@@ -34,7 +34,7 @@ async function fetchRainfallData() {
             updateChart(processedData);
             
             // Set initial filter to hourly
-            const hourlyButton = document.querySelector('[data-filter="hourly"]');
+            const hourlyButton = document.querySelector('[data-filter="today"]');
             if (hourlyButton) {
                 hourlyButton.click();
             }
