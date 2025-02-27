@@ -78,7 +78,7 @@ function filterData(filterType) {
             
             switch(filterType) {
                 case 'hourly':
-                    return (now - itemDate) <= 3600000;
+                    return (now - itemDate) <= 6 * 3600000;
                 case 'today':
                     return itemDate.getDate() === now.getDate() &&
                            itemDate.getMonth() === now.getMonth() &&
@@ -152,7 +152,6 @@ function processChartData(rawData) {
 }
 
 function updateChart(processedData) {
-    console.log(processedData, "fsgdgsdfgfsdg");
     const option = {
         title: {
             text: 'Reservoir Levels Observed and Forecast'
@@ -194,7 +193,7 @@ function updateChart(processedData) {
             {
                 name: 'Observed',
                 type: 'line',
-                stack: 'Total',
+                // stack: 'Total',
                 data: processedData.observed,
                 smooth: 0.5,
                 showSymbol: false,
@@ -229,7 +228,7 @@ function updateChart(processedData) {
             {
                 name: 'Forecast',
                 type: 'line',
-                stack: 'Total',
+                // stack: 'Total',
                 data: processedData.forecast,
                 lineStyle: {
                     color: 'rgb(12 100 141)',
@@ -238,6 +237,12 @@ function updateChart(processedData) {
                 },
                 smooth: 0.5,
                 showSymbol: false,
+                emphasis: {
+                    lineStyle: {
+                        color: 'rgb(12 100 141)',
+                        width: 4
+                    }
+                },
                 markLine: {
                     data: [
                         {
