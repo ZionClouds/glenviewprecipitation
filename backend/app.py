@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Initialize Firestore Client
-db = firestore.Client(database="glenview-data")
+db = firestore.Client(project="zbala-1", database="glenview-data")
 
 # Firestore Collection Name
 COLLECTION_NAME = "glenview-data"
@@ -73,17 +73,41 @@ def store_data():
     # except Exception as e:
     #     return jsonify({"error": str(e)}), 500
 
+@app.route('/prune_array_fields', methods=['POST'])
+def prune_array_fields():
+    try:
+        # Fetch all documents in the collection
+        docs = db.collection(COLLECTION_NAME).stream()
+        
+        for doc_snapshot in docs:
+            doc_data = doc_snapshot.to_dict()
+            
+            # If there's an array field named 'previousData'
+            if 'previousData' in doc_data and isinstance(doc_data['previousData'], list):
+                # Keep only the last 15 records
+                trimmed_data = doc_data['previousData'][-15:]
+                
+                # Update the document
+                doc_snapshot.reference.update({
+                    'previousData': trimmed_data
+                })
+
+        return jsonify({"message": "Array fields pruned to 15 records each"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 
 @app.route('/retrieve_data', methods=['GET'])
 def retrieve_data():
     try:
-        docs = db.collection(COLLECTION_NAME).stream()
+        docs = db.collection(COLLECTION_NAME).limit(20).stream()
+        # print([len(doc.to_dict()) for doc in docs])
         data = [{doc.id: doc.to_dict()} for doc in docs]
-
         return jsonify({"data": data}), 200
-
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
     
 @app.route('/retrieve_city_data', methods=['GET'])
 def retrieve_city_data():
@@ -111,5 +135,5 @@ def retrieve_city_data():
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 8080))  # Get PORT from environment variables
-    app.run(host='0.0.0.0', port=port)  # Ensure Flask listens on all interfaces (Cloud Run requirement)
+    # port = int(os.environ.get("PORT", 8000))  # Get PORT from environment variables
+    app.run(host='0.0.0.0', port=8080)  # Ensure Flask listens on all interfaces (Cloud Run requirement)
