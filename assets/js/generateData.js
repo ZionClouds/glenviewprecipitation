@@ -68,8 +68,8 @@ async function makeApiCall() {
         }
 
         const currentTime = new Date().toLocaleString();
-        document.getElementById('status').innerHTML += 
-            `<p>Data sent successfully at: ${currentTime}</p>`;
+        // document.getElementById('status').innerHTML += 
+        //     `<p>Data sent successfully at: ${currentTime}</p>`;
     } catch (error) {
         console.error('Error:', error);
     }

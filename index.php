@@ -53,6 +53,24 @@
             </div>
         </nav>
 
+        <!-- <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3 class="mb-3">Cumulative Rainfall Map</h3>
+                </div>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            Locations List
+                        </div>
+                        <div class="col-md-9">
+                            <div>map</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
         <div class="container mt-5">
             <div class="d-flex align-items-center justify-content-between">
                 <h3 class="mb-3">Cumulative Rainfall Map</h3>
@@ -73,10 +91,17 @@
                     </ul>
                 </div>
             </div>
+        </div>
+
+        <div class="container-fluid mt-5">
             <div class="map-container">
                 <div id="map" style="height: 600px;width: 100%"></div>
+                <div id="info-panel">
+                    <button class="close-btn" onclick="closeInfoPanel()">&times;</button>
+                    <div id="info-content"></div>
+                </div>
             </div>
-            <div class="mt-5">
+            <!-- <div class="mt-5">
                 <div id="main" style="width: 100%; height: 500px"></div>
                 <div class="row mt-2">
                     <div class="col-md-10 flood-info-data mx-auto">
@@ -98,7 +123,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <footer class="container pt-4 my-md-5 pt-md-5 border-top">
@@ -130,7 +155,8 @@
         <script src="assets/js/echarts.min.js"></script>
         <!-- <script src="assets/js/mapData.js"></script>
         <script src="assets/js/chart.js"></script> -->
-        <script src="assets/js/generateData.js"></script>
-        <script src="assets/js/app.js"></script>
+        <!-- <script src="assets/js/generateData.js"></script> -->
+        <!-- <script src="assets/js/app.js"></script> -->
+        <script src="assets/js/main.js"></script>
     </body>
 </html>

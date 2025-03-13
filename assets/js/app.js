@@ -73,12 +73,13 @@ function filterData(filterType) {
         const locationKey = Object.keys(location)[0];
         const locationData = location[locationKey];
         
-        const filteredPreviousData = locationData.previousData.filter(item => {
+        // First filter the data based on time period
+        let filteredPreviousData = locationData.previousData.filter(item => {
             const itemDate = new Date(item.timestamp);
             
             switch(filterType) {
                 case 'hourly':
-                    return (now - itemDate) <= 6 * 3600000;
+                    return (now - itemDate) <= 6 * 3600000; // 6 hours in milliseconds
                 case 'today':
                     return itemDate.getDate() === now.getDate() &&
                            itemDate.getMonth() === now.getMonth() &&
@@ -87,12 +88,25 @@ function filterData(filterType) {
                     const oneWeekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
                     return itemDate >= oneWeekAgo;
                 case 'monthly':
-                    return itemDate.getMonth() === now.getMonth() &&
-                           itemDate.getFullYear() === now.getFullYear();
+                    // Show last 30 days of data
+                    const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+                    return itemDate >= thirtyDaysAgo;
                 default:
                     return true;
             }
         });
+        
+        // Sort by date (newest first) to handle the limiting of data points
+        filteredPreviousData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        // Limit the number of data points based on filter type
+        if (filterType === 'today' && filteredPreviousData.length > 10) {
+            // Keep only the latest 10 records for today's view
+            filteredPreviousData = filteredPreviousData.slice(0, 10);
+        }
+        
+        // Resort to chronological order (oldest first)
+        filteredPreviousData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
         
         return {
             [locationKey]: {
@@ -115,68 +129,232 @@ function updateVisualizations(filteredData) {
 
 // Chart processing and updating
 function processChartData(rawData) {
-    const locationData = Object.values(rawData[0]);
+    // Get the first location's data for demonstration
+    const locationData = rawData.map(loc => Object.values(loc)[0]);
     
-    const processedData = locationData[0].previousData.map(item => {
-        return {
-            date: new Date(item.timestamp),
-            level: parseFloat((item.riseLevel - 610).toFixed(2))
-        };
+    let allProcessedData = [];
+
+    // Process data for each location
+    locationData.forEach(location => {
+        if (location.previousData && location.previousData.length > 0) {
+            const processedData = location.previousData.map(item => {
+                return {
+                    date: new Date(item.timestamp),
+                    level: parseFloat((item.riseLevel - 610).toFixed(2)),
+                    locationName: location.city
+                };
+            });
+            allProcessedData = [...allProcessedData, ...processedData];
+        }
     });
 
-    processedData.sort((a, b) => a.date - b.date);
-
-    const xAxisData = processedData.map(item => 
-        item.date.toLocaleDateString('en-US', { 
-            day: '2-digit',
-            month: 'short'
-        })
-    );
-
-    const midPoint = Math.floor(processedData.length / 2);
-    const observedData = processedData.map((item, index) => 
-        index < midPoint ? item.level : null
-    );
+    // Sort data by date (oldest to newest)
+    allProcessedData.sort((a, b) => a.date - b.date);
     
-    const forecastData = processedData.map((item, index) => {
-        if (index < midPoint) return null;
-        const lastObserved = processedData[midPoint - 1].level;
-        return parseFloat((lastObserved * (1 - (index - midPoint) * 0.1)).toFixed(2));
+    // Get the currently selected filter
+    const activeFilter = document.querySelector('[data-filter].btn-primary')?.getAttribute('data-filter') || 'today';
+    
+    // Format the x-axis labels based on the selected filter
+    const xAxisData = allProcessedData.map(item => {
+        switch(activeFilter) {
+            case 'hourly':
+                return item.date.toLocaleTimeString('en-US', { 
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            case 'today':
+                return item.date.toLocaleTimeString('en-US', { 
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            case 'weekly':
+                // For weekly view, show both day and date
+                return item.date.toLocaleDateString('en-US', { 
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            case 'monthly':
+                // For monthly view, show day and month
+                return item.date.toLocaleDateString('en-US', { 
+                    month: 'short',
+                    day: 'numeric'
+                });
+            default:
+                return item.date.toLocaleDateString('en-US', { 
+                    day: '2-digit',
+                    month: 'short'
+                });
+        }
     });
 
+    // Create a map to group data points by date label to handle duplicates
+    const dateMap = new Map();
+    allProcessedData.forEach((item, index) => {
+        const dateLabel = xAxisData[index];
+        if (!dateMap.has(dateLabel)) {
+            dateMap.set(dateLabel, {
+                sum: item.level,
+                count: 1,
+                index: index
+            });
+        } else {
+            const existing = dateMap.get(dateLabel);
+            existing.sum += item.level;
+            existing.count += 1;
+        }
+    });
+
+    // Create unique dates and corresponding averaged data
+    const uniqueDates = Array.from(dateMap.keys());
+    const observedData = uniqueDates.map(dateLabel => {
+        const data = dateMap.get(dateLabel);
+        return parseFloat((data.sum / data.count).toFixed(2));
+    });
+    
+    // Generate forecast data based on the trend
+    let forecastData;
+    
+    // Calculate where the forecast should start
+    const splitIndex = Math.floor(uniqueDates.length * 0.7); // 70% observed, 30% forecast
+    
+    // Get the last few valid observations to use as a starting point for forecast
+    const lastObservedValues = observedData.slice(Math.max(0, splitIndex - 3), splitIndex);
+    let lastValidValue = observedData[splitIndex - 1];
+    
+    // Fallback if we don't have a valid value at the split point
+    if (lastValidValue === undefined || lastValidValue === null) {
+        const validValues = observedData.filter(val => val !== null && val !== undefined);
+        lastValidValue = validValues[validValues.length - 1] || 7.0; // Default if no valid data
+    }
+    
+    if (activeFilter === 'today' || activeFilter === 'hourly') {
+        // For shorter time periods, create a simple trend forecast
+        forecastData = uniqueDates.map((_, index) => {
+            if (index < splitIndex) return null;
+            
+            // Simple gentle downward trend for forecast
+            const distanceFromSplit = index - splitIndex;
+            const trend = distanceFromSplit * 0.01;
+            return parseFloat((lastValidValue * (1 - trend)).toFixed(2));
+        });
+    } else {
+        // For longer time periods, use a more pronounced trend with variations
+        forecastData = uniqueDates.map((_, index) => {
+            if (index < splitIndex) return null;
+            
+            // More varied forecast for longer timeframes
+            const distanceFromSplit = index - splitIndex;
+            const trend = distanceFromSplit * 0.03;
+            const variation = Math.sin(distanceFromSplit * 0.5) * 0.2; // Add some cyclic variation
+            
+            return parseFloat((lastValidValue * (1 - trend + variation)).toFixed(2));
+        });
+    }
+
+    // Create clean observed and forecast data arrays
+    const cleanObservedData = [];
+    const cleanForecastData = [];
+    
+    // Fill observed data - include only actual observations
+    for (let i = 0; i < uniqueDates.length; i++) {
+        if (i < splitIndex) {
+            cleanObservedData.push(observedData[i]);
+            cleanForecastData.push(null);
+        } else {
+            cleanObservedData.push(null);
+            cleanForecastData.push(forecastData[i]);
+        }
+    }
+    
     return {
-        dates: xAxisData,
-        observed: observedData,
-        forecast: forecastData
+        dates: uniqueDates,
+        observed: cleanObservedData,
+        forecast: cleanForecastData
     };
 }
 
 function updateChart(processedData) {
+    // Get current filter type
+    const activeFilter = document.querySelector('[data-filter].btn-primary')?.getAttribute('data-filter') || 'today';
+    
+    // Set chart title based on filter
+    let titleText = 'Reservoir Levels';
+    switch(activeFilter) {
+        case 'hourly':
+            titleText += ' (Last 6 Hours)';
+            break;
+        case 'today':
+            titleText += ' (Today - Latest 10 Readings)';
+            break;
+        case 'weekly':
+            titleText += ' (Last 7 Days)';
+            break;
+        case 'monthly':
+            titleText += ' (Last 30 Days)';
+            break;
+    }
+
     const option = {
         title: {
-            text: 'Reservoir Levels Observed and Forecast'
+            text: titleText
         },
         tooltip: {
             trigger: 'axis',
+            formatter: function(params) {
+                // Filter out null values
+                const validParams = params.filter(param => param.value !== null);
+                
+                if (validParams.length === 0) return '';
+                
+                // Show only the tooltip for the data being hovered
+                const param = validParams[0];
+                
+                let tooltipText = param.axisValueLabel + '<br/>';
+                tooltipText += param.marker + ' ' + param.seriesName + ': ' + param.value + ' FT';
+                
+                return tooltipText;
+            },
+            axisPointer: {
+                type: 'line',
+                lineStyle: {
+                    color: '#999',
+                    width: 1,
+                    type: 'dashed'
+                }
+            }
+        },
+        legend: {
+            data: ['Observed', 'Forecast'],
+            bottom: 0
         },
         grid: {
             backgroundColor: '#efefef',
             show: true,
+            containLabel: true,
+            left: '5%',
+            right: '5%',
+            bottom: '10%'
         },
         xAxis: {
             type: 'category',
             data: processedData.dates,
+            axisLabel: {
+                rotate: activeFilter === 'monthly' || activeFilter === 'weekly' ? 45 : 0,
+                fontSize: 10
+            },
             splitLine: {
                 show: true,
                 lineStyle: {
                     color: '#e3e3e3',
-                    width: 2,
+                    width: 1,
                     type: 'solid'
                 }
             }
         },
         yAxis: [{
             type: 'value',
+            name: 'Level (FT)',
             min: 0,
             max: 10,
             interval: 1,
@@ -184,7 +362,7 @@ function updateChart(processedData) {
             splitLine: {
                 lineStyle: {
                     color: '#e3e3e3',
-                    width: 2,
+                    width: 1,
                     type: 'solid'
                 }
             }
@@ -193,10 +371,10 @@ function updateChart(processedData) {
             {
                 name: 'Observed',
                 type: 'line',
-                // stack: 'Total',
                 data: processedData.observed,
                 smooth: 0.5,
                 showSymbol: false,
+                connectNulls: true, // Connect across null points
                 lineStyle: {
                     color: '#01dede',
                     width: 3
@@ -223,12 +401,14 @@ function updateChart(processedData) {
                         color: '#01dede',
                         width: 3
                     }
+                },
+                tooltip: {
+                    show: true
                 }
             },
             {
                 name: 'Forecast',
                 type: 'line',
-                // stack: 'Total',
                 data: processedData.forecast,
                 lineStyle: {
                     color: 'rgb(12 100 141)',
@@ -237,40 +417,44 @@ function updateChart(processedData) {
                 },
                 smooth: 0.5,
                 showSymbol: false,
+                connectNulls: true, // Connect across null points
                 emphasis: {
                     lineStyle: {
                         color: 'rgb(12 100 141)',
                         width: 4
                     }
+                }, 
+                tooltip: {
+                    show: true
                 },
                 markLine: {
                     data: [
                         {
                             yAxis: 7,
-                            label: { formatter: 'Action' },
-                            lineStyle: { color: '#00fe00' }
+                            label: { formatter: 'Action', position: 'insideEndTop' },
+                            lineStyle: { color: '#00fe00', width: 2 }
                         },
                         {
                             yAxis: 7.5,
-                            label: { formatter: 'Minor' },
-                            lineStyle: { color: '#008c0f' }
+                            label: { formatter: 'Minor', position: 'insideEndTop' },
+                            lineStyle: { color: '#008c0f', width: 2 }
                         },
                         {
                             yAxis: 8,
-                            label: { formatter: 'Moderate' },
-                            lineStyle: { color: '#ffbe0a' }
+                            label: { formatter: 'Moderate', position: 'insideEndTop' },
+                            lineStyle: { color: '#ffbe0a', width: 2 }
                         },
                         {
                             yAxis: 9,
-                            label: { formatter: 'Major' },
-                            lineStyle: { color: '#ca0c00' }
+                            label: { formatter: 'Major', position: 'insideEndTop' },
+                            lineStyle: { color: '#ca0c00', width: 2 }
                         }
                     ],
                     lineStyle: {
-                        color: 'black',
                         type: 'solid'
                     },
-                    symbol: ['none']
+                    symbol: ['none', 'none'],
+                    animation: false
                 }
             }
         ]
@@ -361,6 +545,7 @@ function initMap() {
 }
 
 function updateMapMarkers(data) {
+    console.log(data)
     if (!map) return;
 
     // Clear existing markers if any
